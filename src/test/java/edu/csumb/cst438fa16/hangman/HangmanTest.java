@@ -2,10 +2,17 @@ package edu.csumb.cst438fa16.hangman;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import org.junit.*;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import org.junit.Test;
 
 public class HangmanTest {
+
+    WebDriver driver = new ChromeDriver();
     @Test
     public void testEmptyWord() {
 	Hangman hangman = new Hangman("");
@@ -46,5 +53,31 @@ public class HangmanTest {
     public void testAllMatch() {
 	Hangman hangman = new Hangman("cat");
 	assertThat(hangman.match("catz"), equalTo("cat"));
+    }
+
+    @Before
+    public void setUp() {
+        driver.get("http://localhost:8080/hangman.html");
+    }
+
+    @After
+    public void tearDown() {
+        driver.quit();
+    }
+
+    /**
+     * Acceptance test:
+     *
+     * Given I am on the hangman page
+     * When I enter "c" and press submit
+     * Then I see my submission in the 'pattern' space
+     */
+    @Test
+    public void testSubmitC() {
+        driver.findElement(By.id("newGuesses")).sendKeys("c");
+        driver.findElement(By.id("submit")).click();
+
+        // we should see the letter 'c' appear in the oldGuesses field
+        (new WebDriverWait(driver, 10)).until(ExpectedConditions.textToBe(By.id("oldGuesses"), "c"));
     }
 }
